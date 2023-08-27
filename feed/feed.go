@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/gocolly/colly/v2"
@@ -29,8 +30,8 @@ func isZipFilename(filename string) bool {
 }
 
 func isUpdatedAtField(field string) bool {
-	// tbdw
-	return strings.Contains(field, "/")
+	r := regexp.MustCompile(`\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}`)
+	return r.Match([]byte(field))
 }
 
 func GetAvailableFiles() []string {
@@ -44,19 +45,18 @@ func GetAvailableFiles() []string {
 	files := make([]FileSnapshot, 0, 200)
 
 	c.OnHTML("tr", func(e *colly.HTMLElement) {
-		fmt.Println("here")
-
 		values := e.ChildTexts("td")
-		fmt.Println(len(values))
 		var filename string
 		var updatedAt string
 		for _, value := range values {
+			fmt.Println(value)
 			if isZipFilename(value) {
 				filename = value
+			} else if isUpdatedAtField(value) {
+				updatedAt = value
 			}
 		}
 
-		updatedAt = "123123"
 		if filename != "" && updatedAt != "" {
 			files = append(files, FileSnapshot{filename, updatedAt})
 		}
@@ -82,15 +82,6 @@ func GetAvailableFiles() []string {
 
 // if err != nil {
 // 	log.Fatalln(err)
-// }
-
-// r := regexp.MustCompile(`href="(?P<link>.*.zip)"`)
-// matches := r.FindAllStringSubmatch(string(b), -1)
-
-// if err := os.Mkdir("data", 0755); err != nil {
-// 	if !strings.Contains(err.Error(), "already exists") {
-// 		log.Fatalln(err)
-// 	}
 // }
 
 // for _, match := range matches {
