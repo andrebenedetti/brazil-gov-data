@@ -1,4 +1,7 @@
-package feed
+package discovery
+
+// Retrieve links from https://dadosabertos.rfb.gov.br/CNPJ/
+// List of all brazilian companies
 
 import (
 	"fmt"
@@ -8,7 +11,8 @@ import (
 	"github.com/gocolly/colly/v2"
 )
 
-var cnpjDataUrl = "https://dadosabertos.rfb.gov.br/CNPJ/"
+type GovBrCnpjFinder struct {
+}
 
 func isZipFilename(filename string) bool {
 	return strings.HasSuffix(filename, ".zip")
@@ -19,10 +23,11 @@ func isUpdatedAtField(field string) bool {
 	return r.Match([]byte(field))
 }
 
-func GetAvailableFiles() []FileSnapshot {
+func (finder *GovBrCnpjFinder) FindFiles() []RemoteFileMetadata {
+	var cnpjDataUrl = "https://dadosabertos.rfb.gov.br/CNPJ/"
 	c := colly.NewCollector()
 
-	files := make([]FileSnapshot, 0, 200)
+	files := make([]RemoteFileMetadata, 0, 200)
 
 	c.OnHTML("tr", func(e *colly.HTMLElement) {
 		values := e.ChildTexts("td")
@@ -38,7 +43,7 @@ func GetAvailableFiles() []FileSnapshot {
 		}
 
 		if filename != "" && updatedAt != "" {
-			files = append(files, FileSnapshot{cnpjDataUrl + filename, filename, updatedAt})
+			files = append(files, RemoteFileMetadata{cnpjDataUrl + filename, filename, updatedAt})
 		}
 	})
 
@@ -48,6 +53,5 @@ func GetAvailableFiles() []FileSnapshot {
 
 	c.Visit(cnpjDataUrl)
 
-	fmt.Println(files)
 	return files
 }

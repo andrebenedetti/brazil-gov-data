@@ -1,7 +1,8 @@
 package main
 
-import "gov-data/feed"
+import "gov-data/lib/discovery"
 
 func main() {
-	feed.DownloadFiles(feed.GetAvailableFiles())
+	finder := discovery.GovBrCnpjFinder{}
+	finder.FindFiles()
 }
