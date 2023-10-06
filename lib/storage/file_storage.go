@@ -20,7 +20,7 @@ type FileStorage struct {
 
 func (fs *FileStorage) prepareDir() {
 	if err := os.Mkdir(fs.Directory, 0700); err != nil {
-		if !strings.Contains(err.Error(), "already exists") {
+		if !strings.Contains(err.Error(), "exists") {
 			log.Fatalln(err)
 		}
 	}
