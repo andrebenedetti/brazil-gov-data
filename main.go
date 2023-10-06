@@ -1,8 +1,7 @@
 package main
 
-import "gov-data/cmd/example"
+import "gov-data/cmd"
 
 func main() {
-	// cmd.Execute()
-	example.Run()
+	cmd.Execute()
 }
