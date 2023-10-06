@@ -1,8 +1,7 @@
 package main
 
-import "gov-data/lib/discovery"
+import "gov-data/cmd"
 
 func main() {
-	finder := discovery.GovBrCnpjFinder{}
-	finder.FindFiles()
+	cmd.Execute()
 }

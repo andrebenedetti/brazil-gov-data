@@ -11,6 +11,9 @@ import (
 	"github.com/gocolly/colly/v2"
 )
 
+//	    Download speed from dadosabertos.rfb.gov.br is known to be
+//		really really slow. If you intend to download it over and over again,
+//		for example because you need to keep your database up-to-date,
 type GovBrCnpjFinder struct {
 }
 
