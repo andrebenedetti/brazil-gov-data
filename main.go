@@ -1,7 +1,7 @@
 package main
 
-import "gov-data/feed"
+import "gov-data/lib/data_sources"
 
 func main() {
-	feed.DownloadFiles(feed.GetAvailableFiles())
+	data_sources.DownloadFiles(data_sources.GetAvailableFiles())
 }

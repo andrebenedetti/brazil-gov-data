@@ -1,4 +1,4 @@
-package feed
+package data_sources
 
 import (
 	"fmt"
