@@ -25,7 +25,10 @@ func Run() {
 			if err != nil {
 				log.Fatalf("Error %s", err.Error())
 			}
-			downloader.Download(src.Url, file, &wg)
+			defer file.Close()
+			data := downloader.Download(src.Url)
+			file.Write(data)
+			wg.Done()
 		}(s)
 	}
 	wg.Wait()

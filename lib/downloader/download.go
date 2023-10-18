@@ -4,16 +4,19 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"sync"
 )
 
-func Download(url string, writer io.Writer, wg *sync.WaitGroup) {
+func Download(url string) []byte {
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Fatalf("Failed to get url %s\n", url)
 	}
-
 	defer resp.Body.Close()
-	io.Copy(writer, resp.Body)
-	wg.Done()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalf("Error reading response body: %s", err.Error())
+	}
+
+	return body
 }
