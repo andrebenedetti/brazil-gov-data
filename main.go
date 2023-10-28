@@ -1,14 +1,8 @@
 package main
 
-import (
-	"fmt"
-	"gov-data/aggregator"
-)
+import "gov-data/lib/discovery"
 
 func main() {
-	result := aggregator.ParseFile("./backup/cnaes.csv")
-	fmt.Println(result[100])
-	fmt.Println(result[101])
-
-	aggregator.PrintAllRecords(result)
+	finder := discovery.GovBrCnpjFinder{}
+	finder.FindFiles()
 }
