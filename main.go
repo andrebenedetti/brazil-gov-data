@@ -1,7 +1,14 @@
 package main
 
-import "gov-data/cmd"
+import (
+	"fmt"
+	"gov-data/aggregator"
+)
 
 func main() {
-	cmd.Execute()
+	result := aggregator.ParseFile("./backup/cnaes.csv")
+	fmt.Println(result[100])
+	fmt.Println(result[101])
+
+	aggregator.PrintAllRecords(result)
 }
