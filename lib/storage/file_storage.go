@@ -12,8 +12,6 @@ type FileSnapshot struct {
 	updatedAt string
 }
 
-var filesDir = "gov-br"
-
 type FileStorage struct {
 	Directory string
 }
