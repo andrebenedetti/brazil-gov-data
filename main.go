@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"gov-data/lib/data_loaders"
+	"gov-data/lib/loaders"
 )
 
 func main() {
-	loader := data_loaders.CnaeLoader{}
+	loader := loaders.CnaeLoader{}
 	results, _ := loader.Load()
 	fmt.Println(results)
 

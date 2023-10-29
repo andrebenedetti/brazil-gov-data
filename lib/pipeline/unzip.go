@@ -1,9 +1,8 @@
-package data_pipeline
+package pipeline
 
 import (
 	"archive/zip"
 	"bytes"
-	"fmt"
 	"io"
 	"log"
 )
@@ -16,7 +15,6 @@ func UnzipBytes(z []byte) [][]byte {
 
 	unzippedFiles := make([][]byte, 0)
 	for _, zipFile := range zipReader.File {
-		fmt.Println("Reading file:", zipFile.Name)
 		unzippedFileBytes, err := readZipFile(zipFile)
 		if err != nil {
 			log.Println(err)

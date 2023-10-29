@@ -1,9 +1,9 @@
-package data_loaders
+package loaders
 
 import (
 	"bytes"
 	"encoding/csv"
-	"gov-data/lib/data_pipeline"
+	"gov-data/lib/pipeline"
 )
 
 // CNAE stands for Classificação Nacional de Atividades Econômicas, or
@@ -23,9 +23,9 @@ type CnaeLoader struct {
 
 func (l *CnaeLoader) Load() ([]Cnae, error) {
 	// assumption: file exists at this location
-	file := data_pipeline.Download("https://dadosabertos.rfb.gov.br/CNPJ/Cnaes.zip")
+	file := pipeline.Download("https://dadosabertos.rfb.gov.br/CNPJ/Cnaes.zip")
 	// assumption: file is zipped
-	unzippedFiles := data_pipeline.UnzipBytes(file)
+	unzippedFiles := pipeline.UnzipBytes(file)
 	if len(unzippedFiles) != 1 {
 		return []Cnae{}, ErrorDataSourceChanged
 	}
@@ -41,7 +41,7 @@ func (l *CnaeLoader) Load() ([]Cnae, error) {
 
 	cnaes := make([]Cnae, len(records))
 	for i, record := range records {
-		label, err := data_pipeline.Win1252ToUtf8(record[1])
+		label, err := pipeline.Win1252ToUtf8(record[1])
 		if err != nil {
 			return cnaes, ErrorDataSourceChanged
 		}

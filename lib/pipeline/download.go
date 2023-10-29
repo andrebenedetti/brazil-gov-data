@@ -1,4 +1,4 @@
-package data_pipeline
+package pipeline
 
 import (
 	"io"

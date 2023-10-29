@@ -1,4 +1,4 @@
-package data_loaders
+package loaders
 
 import "errors"
 
