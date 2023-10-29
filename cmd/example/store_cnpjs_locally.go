@@ -2,8 +2,8 @@ package example
 
 import (
 	"fmt"
+	"gov-data/lib/data_pipeline"
 	"gov-data/lib/discovery"
-	"gov-data/lib/downloader"
 	"gov-data/lib/storage"
 	"log"
 	"sync"
@@ -26,7 +26,7 @@ func Run() {
 				log.Fatalf("Error %s", err.Error())
 			}
 			defer file.Close()
-			data := downloader.Download(src.Url)
+			data := data_pipeline.Download(src.Url)
 			file.Write(data)
 			wg.Done()
 		}(s)

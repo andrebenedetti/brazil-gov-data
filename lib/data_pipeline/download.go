@@ -1,4 +1,4 @@
-package downloader
+package data_pipeline
 
 import (
 	"io"

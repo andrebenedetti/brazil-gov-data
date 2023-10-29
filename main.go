@@ -1,8 +1,13 @@
 package main
 
-import "gov-data/lib/discovery"
+import (
+	"fmt"
+	"gov-data/lib/data_loaders"
+)
 
 func main() {
-	finder := discovery.GovBrCnpjFinder{}
-	finder.FindFiles()
+	loader := data_loaders.CnaeLoader{}
+	results, _ := loader.Load()
+	fmt.Println(results)
+
 }

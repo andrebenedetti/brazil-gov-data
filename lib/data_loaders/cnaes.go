@@ -1,6 +1,10 @@
 package data_loaders
 
-import "gov-data/lib/downloader"
+import (
+	"bytes"
+	"encoding/csv"
+	"gov-data/lib/data_pipeline"
+)
 
 // CNAE stands for Classificação Nacional de Atividades Econômicas, or
 // National Classification of Economic Activities.
@@ -10,22 +14,43 @@ import "gov-data/lib/downloader"
 
 // We store codes as strings to handle CNAES in the form "0112199"
 type Cnae struct {
-	code  string
-	label string
+	Code  string
+	Label string
 }
 
 type CnaeLoader struct {
 }
 
-// Download Raw does not do any type of parsing over the file.
-// Just returns it as it is.
-func (l *CnaeLoader) DownloadRaw() []byte {
-	url := "https://dadosabertos.rfb.gov.br/CNPJ"
-	filename := "Cnaes.zip"
+func (l *CnaeLoader) Load() ([]Cnae, error) {
+	// assumption: file exists at this location
+	file := data_pipeline.Download("https://dadosabertos.rfb.gov.br/CNPJ/Cnaes.zip")
+	// assumption: file is zipped
+	unzippedFiles := data_pipeline.UnzipBytes(file)
+	if len(unzippedFiles) != 1 {
+		return []Cnae{}, ErrorDataSourceChanged
+	}
 
-	return downloader.Download(url + filename)
+	cnaesCsv := unzippedFiles[0]
+
+	r := csv.NewReader(bytes.NewReader(cnaesCsv))
+	r.Comma = ';'
+	records, err := r.ReadAll()
+	if err != nil {
+		panic(err)
+	}
+
+	cnaes := make([]Cnae, len(records))
+	for i, record := range records {
+		label, err := data_pipeline.Win1252ToUtf8(record[1])
+		if err != nil {
+			return cnaes, ErrorDataSourceChanged
+		}
+
+		cnaes[i] = Cnae{
+			Code:  record[0],
+			Label: label,
+		}
+	}
+
+	return cnaes, nil
 }
-
-// func (l *CnaeLoader) Parse(file []byte) []Cnae {
-
-// }
