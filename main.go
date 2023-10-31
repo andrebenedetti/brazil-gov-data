@@ -7,12 +7,12 @@ import (
 )
 
 func main() {
-	loader := loaders.CnaeLoader{}
+	loader := loaders.CompanyLoader{}
 	data, err := loader.Load()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	storage := storage.NewFileStorage(".", "cnaes.json")
+	storage := storage.NewFileStorage(".", "companies.json")
 	storage.Store(data)
 }
