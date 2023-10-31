@@ -14,8 +14,8 @@ import (
 
 // We store codes as strings to handle CNAES in the form "0112199"
 type Cnae struct {
-	Code  string
-	Label string
+	Code  string `json:"code"`
+	Label string `json:"label"`
 }
 
 type CnaeLoader struct {

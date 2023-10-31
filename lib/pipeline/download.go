@@ -6,10 +6,10 @@ import (
 	"net/http"
 )
 
-func Download(url string) []byte {
-	resp, err := http.Get(url)
+func Download(fileUrl string) []byte {
+	resp, err := http.Get(fileUrl)
 	if err != nil {
-		log.Fatalf("Failed to get url %s\n", url)
+		log.Fatalf("Failed to get url %s\n", fileUrl)
 	}
 	defer resp.Body.Close()
 
