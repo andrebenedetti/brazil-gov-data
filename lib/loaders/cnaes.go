@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"encoding/csv"
 	"gov-data/lib/pipeline"
+	"gov-data/lib/storage"
+	"io"
+	"log"
 )
 
 // CNAE stands for Classificação Nacional de Atividades Econômicas, or
@@ -18,39 +21,49 @@ type Cnae struct {
 	Label string `json:"label"`
 }
 
-type CnaeLoader struct {
+type cnaeLoader struct {
+	storage storage.Storage
 }
 
-func (l *CnaeLoader) Load() ([]Cnae, error) {
+func NewCnaeLoader(s storage.Storage) *cnaeLoader {
+	return &cnaeLoader{
+		storage: s,
+	}
+}
+
+func (l *cnaeLoader) Load() error {
 	// assumption: file exists at this location
 	file := pipeline.Download("https://dadosabertos.rfb.gov.br/CNPJ/Cnaes.zip")
 	// assumption: file is zipped
 	unzippedFiles := pipeline.UnzipBytes(file)
 	if len(unzippedFiles) != 1 {
-		return []Cnae{}, ErrorDataSourceChanged
+		return ErrorDataSourceChanged
 	}
 
 	cnaesCsv := unzippedFiles[0]
 
 	r := csv.NewReader(bytes.NewReader(cnaesCsv))
 	r.Comma = ';'
-	records, err := r.ReadAll()
-	if err != nil {
-		panic(err)
-	}
 
-	cnaes := make([]Cnae, len(records))
-	for i, record := range records {
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal("Error reading csv file")
+		}
+
 		label, err := pipeline.Win1252ToUtf8(record[1])
 		if err != nil {
-			return cnaes, ErrorDataSourceChanged
+			log.Fatal("Error decoding data. Expected Win1252 encoded string, but got something else")
 		}
-
-		cnaes[i] = Cnae{
+		l.storage.Write(Cnae{
 			Code:  record[0],
 			Label: label,
-		}
+		})
 	}
 
-	return cnaes, nil
+	l.storage.Close()
+	return nil
 }
