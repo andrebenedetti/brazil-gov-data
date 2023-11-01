@@ -15,7 +15,6 @@ type FileStorage struct {
 }
 
 func NewFileStorage(dir string, filename string) *FileStorage {
-
 	if err := os.Mkdir(dir, 0700); err != nil {
 		if !strings.Contains(err.Error(), "exists") {
 			log.Fatalln(err)

@@ -8,8 +8,8 @@ import (
 )
 
 func main() {
-	storage := storage.NewFileStorage(".", "cnaes.json")
-	loader := loaders.NewCnaeLoader(storage)
+	storage := storage.NewFileStorage(".", "companies.json")
+	loader := loaders.NewCompanyLoader(storage)
 	err := loader.Load()
 	if err != nil {
 		log.Fatal(err)
