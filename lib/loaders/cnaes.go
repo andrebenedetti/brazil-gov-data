@@ -9,18 +9,6 @@ import (
 	"log"
 )
 
-// CNAE stands for Classificação Nacional de Atividades Econômicas, or
-// National Classification of Economic Activities.
-// Each entry is a numeric code and a string that identifies an economic activity.
-// For example, this CNAE identifies nursery activities:
-// "8650001";"Atividades de enfermagem"
-
-// We store codes as strings to handle CNAES in the form "0112199"
-type Cnae struct {
-	Code  string `json:"code"`
-	Label string `json:"label"`
-}
-
 type cnaeLoader struct {
 	storage storage.Storage
 }
@@ -58,7 +46,7 @@ func (l *cnaeLoader) Load() error {
 		if err != nil {
 			log.Fatal("Error decoding data. Expected Win1252 encoded string, but got something else")
 		}
-		l.storage.Write(Cnae{
+		l.storage.Write(storage.Cnae{
 			Code:  record[0],
 			Label: label,
 		})

@@ -10,7 +10,8 @@ import (
 )
 
 type postgresStore struct {
-	Conn *pgx.Conn
+	Conn  *pgx.Conn
+	batch *pgx.Batch
 }
 
 func NewPostgresStore() *postgresStore {
@@ -23,10 +24,15 @@ func NewPostgresStore() *postgresStore {
 		Conn: conn,
 	}
 	instance.initTables()
+	instance.batch = &pgx.Batch{}
 	return instance
 }
 
 func (pg *postgresStore) Close() {
+	if pg.batch.Len() > 0 {
+		results := pg.Conn.SendBatch(context.Background(), pg.batch)
+		results.Close()
+	}
 	if pg.Conn != nil {
 		pg.Conn.Close(context.Background())
 	}
@@ -34,7 +40,7 @@ func (pg *postgresStore) Close() {
 
 func (pg *postgresStore) initTables() {
 	_, err := pg.Conn.Exec(context.TODO(), `CREATE TABLE IF NOT EXISTS public.cnae (
-		id _varchar NOT NULL,
+		id varchar NOT NULL,
 		"label" varchar NOT NULL,
 		CONSTRAINT cnae_pk PRIMARY KEY (id)
 	);`)
@@ -61,4 +67,18 @@ func connect() (*pgx.Conn, error) {
 	}
 
 	return conn, err
+}
+
+func (pg *postgresStore) Write(i interface{}) error {
+	t, ok := i.(Cnae)
+	if ok {
+		pg.enqueueCnae(t)
+	}
+	return nil
+}
+
+func (pg *postgresStore) enqueueCnae(c Cnae) {
+	fmt.Println(c)
+	pg.Conn.Prepare(context.Background(), "insertCnae", "INSERT INTO public.cnae (id, label) values ($1, $2);")
+	pg.batch.Queue("insertCnae", c.Code, c.Label)
 }
