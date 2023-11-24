@@ -10,15 +10,6 @@ import (
 
 // BasicCnpj is the first 8 digits of the CNPJ, the brazilian document that
 // identifies a company.
-type Company struct {
-	BasicCnpj                        string `json:"basicCnpj"`
-	Name                             string `json:"name"`
-	LegalNature                      string `json:"legalNature"`
-	LegalRepresentativeQualification string `json:"legalRepresentativeQualification"`
-	NominalCapital                   string `json:"nominalCapital"`
-	Size                             string `json:"size"`
-	FederalEntityInCharge            string `json:"federalEntityInCharge"`
-}
 
 type companyLoader struct {
 	storage storage.Storage
@@ -53,7 +44,7 @@ func (l *companyLoader) Load() error {
 			return err
 		}
 
-		l.storage.Write(Company{
+		l.storage.Write(storage.CompanyOld{
 			BasicCnpj:                        record[0],
 			Name:                             record[1],
 			LegalNature:                      record[2],
@@ -64,5 +55,6 @@ func (l *companyLoader) Load() error {
 		})
 	}
 
+	l.storage.Close()
 	return nil
 }
